@@ -96,24 +96,6 @@ GET    /api/orders/{order}
 PUT    /api/orders/{order}
 DELETE /api/orders/{order}
 ```
-
-
-## Verificação deste pacote
-
-Antes de empacotar, os arquivos PHP/Blade, JavaScript, JSON, YAML e shell foram verificados quanto à sintaxe. A execução integrada com containers e os testes Laravel precisam ser feitos no seu computador com Docker Desktop, porque o ambiente usado para gerar o pacote não possui Docker/Composer disponíveis para subir a stack completa.
-
-Depois da primeira inicialização bem-sucedida, execute `docker compose exec app php artisan test`. O primeiro `composer install` também criará `composer.lock`; faça commit dele no Git.
-
-## Estudar o projeto
-
-Leia primeiro:
-
-```text
-docs/COMPONENTES_EXPLICADOS_PTBR.md
-```
-
-Depois:
-
 ```text
 docs/GIT_E_GITHUB_PTBR.md
 deploy/DEPLOY_GCP.md
