@@ -25,7 +25,568 @@ async function loadInventory(){try{[productsCache,movementsCache]=await Promise.
 function renderMovementProducts(){const s=document.getElementById('movement-product'),cur=s.value;s.innerHTML=`<option value="">${t('selectProduct')}</option>`+productsCache.map(p=>`<option value="${p.id}">${esc(p.name)} (${p.stock})</option>`).join('');if(productsCache.some(p=>String(p.id)===cur))s.value=cur;}
 function renderMovements(){document.getElementById('movements-table').innerHTML=movementsCache.length?movementsCache.map(m=>`<tr><td>${esc(m.product?.name??'—')}</td><td><span class="badge badge-${m.type}">${m.type==='in'?t('stockIn'):t('stockOut')}</span></td><td>${m.type==='in'?'+':'-'}${m.quantity}</td><td>${when(m.created_at)}</td></tr>`).join(''):`<tr><td colspan="4" class="empty-state">${t('noMovements')}</td></tr>`;}
 async function saveMovement(e){e.preventDefault();const er=document.getElementById('movement-error');er.textContent='';try{await api('/api/inventory/movements',{method:'POST',body:JSON.stringify({product_id:Number(document.getElementById('movement-product').value),type:document.getElementById('movement-type').value,quantity:Number(document.getElementById('movement-quantity').value)})});e.target.reset();await loadInventory();toast(t('movementSaved'));}catch(err){er.textContent=err.message;}}
-async function loadOrders(){try{ordersCache=await api('/api/orders');renderOrderStats();renderOrders();}catch(e){toast(e.message);}}
+let orderItemsDraft = [];
+
+
+let orderItemsDraft = [];
+
+/* =========================
+   CARREGAR PEDIDOS
+========================= */
+
+async function loadOrders() {
+    try {
+        const [orders, products] = await Promise.all([
+            api('/api/orders'),
+            api('/api/products')
+        ]);
+
+        ordersCache = orders;
+        productsCache = products;
+
+        renderOrderStats();
+        renderOrders();
+
+    } catch (e) {
+        toast(e.message);
+    }
+}
+
+
+/* =========================
+   CONTADORES
+========================= */
+
+function renderOrderStats() {
+    const statuses = [
+        'pending',
+        'processing',
+        'completed',
+        'cancelled'
+    ];
+
+    statuses.forEach(status => {
+        const element = document.getElementById(`orders-${status}`);
+
+        if (!element) return;
+
+        element.textContent = ordersCache.filter(
+            order => order.status === status
+        ).length;
+    });
+}
+
+
+/* =========================
+   LISTA DE PEDIDOS
+========================= */
+
+function renderOrders() {
+    const search = document
+        .getElementById('order-search')
+        .value
+        .trim()
+        .toLowerCase();
+
+    const status = document
+        .getElementById('order-status-filter')
+        .value;
+
+    const rows = ordersCache.filter(order => {
+        const customer = String(
+            order.customer_name ?? ''
+        ).toLowerCase();
+
+        const matchesSearch = customer.includes(search);
+
+        const matchesStatus =
+            !status || order.status === status;
+
+        return matchesSearch && matchesStatus;
+    });
+
+    document.getElementById('orders-table').innerHTML =
+        rows.length
+            ? rows.map(order => {
+                const itemCount =
+                    order.items?.reduce(
+                        (total, item) =>
+                            total + Number(item.quantity),
+                        0
+                    ) ?? 0;
+
+                return `
+                    <tr>
+                        <td>
+                            <strong>#${esc(order.id)}</strong>
+                        </td>
+
+                        <td>
+                            ${esc(order.customer_name ?? '-')}
+
+                            ${
+                                order.customer_email
+                                    ? `<small style="display:block;">
+                                        ${esc(order.customer_email)}
+                                       </small>`
+                                    : ''
+                            }
+                        </td>
+
+                        <td>
+                            ${itemCount}
+                        </td>
+
+                        <td>
+                            <strong>
+                                ${money(order.total)}
+                            </strong>
+                        </td>
+
+                        <td>
+                            <span class="badge badge-${esc(order.status)}">
+                                ${esc(order.status)}
+                            </span>
+                        </td>
+
+                        <td>
+                            ${when(order.created_at)}
+                        </td>
+
+                        <td>
+                            <button
+                                class="small-button"
+                                data-oa="view"
+                                data-id="${order.id}"
+                            >
+                                Ver
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('')
+            : `
+                <tr>
+                    <td colspan="7" class="empty-state">
+                        Nenhum pedido encontrado.
+                    </td>
+                </tr>
+            `;
+}
+
+
+/* =========================
+   ABRIR MODAL
+========================= */
+
+function openOrder() {
+    orderItemsDraft = [];
+
+    document
+        .getElementById('order-form')
+        .reset();
+
+    document
+        .getElementById('order-error')
+        .textContent = '';
+
+    document
+        .getElementById('order-quantity')
+        .value = 1;
+
+    populateOrderProducts();
+
+    updateOrderProductPrice();
+
+    renderOrderItems();
+
+    document
+        .getElementById('order-modal')
+        .classList.remove('hidden');
+}
+
+
+function closeOrder() {
+    orderItemsDraft = [];
+
+    document
+        .getElementById('order-modal')
+        .classList.add('hidden');
+}
+
+
+/* =========================
+   PRODUTOS DO SELECT
+========================= */
+
+function populateOrderProducts() {
+    const select =
+        document.getElementById('order-product');
+
+    select.innerHTML = `
+        <option value="">
+            Selecione um produto
+        </option>
+    `;
+
+    productsCache.forEach(product => {
+        const option =
+            document.createElement('option');
+
+        option.value = product.id;
+
+        option.textContent =
+            `${product.name} - ${product.sku} - ${money(product.price)}`;
+
+        select.appendChild(option);
+    });
+}
+
+
+/* =========================
+   PRODUTO SELECIONADO
+========================= */
+
+function getSelectedOrderProduct() {
+    const id = Number(
+        document.getElementById('order-product').value
+    );
+
+    return productsCache.find(
+        product => Number(product.id) === id
+    );
+}
+
+
+/* =========================
+   PREÇO AUTOMÁTICO
+========================= */
+
+function updateOrderProductPrice() {
+    const product =
+        getSelectedOrderProduct();
+
+    const quantity = Math.max(
+        1,
+        Number(
+            document.getElementById('order-quantity').value
+        ) || 1
+    );
+
+    const price =
+        product
+            ? Number(product.price)
+            : 0;
+
+    document
+        .getElementById('order-unit-price')
+        .value = money(price);
+
+    document
+        .getElementById('order-item-subtotal')
+        .value = money(price * quantity);
+}
+
+
+/* =========================
+   ADICIONAR PRODUTO
+========================= */
+
+function addOrderItem() {
+    const product =
+        getSelectedOrderProduct();
+
+    const quantity = Number(
+        document.getElementById('order-quantity').value
+    );
+
+    if (!product) {
+        toast('Selecione um produto.');
+        return;
+    }
+
+    if (!Number.isInteger(quantity) || quantity < 1) {
+        toast('Quantidade inválida.');
+        return;
+    }
+
+    if (quantity > Number(product.stock)) {
+        toast(
+            `Estoque insuficiente. Disponível: ${product.stock}`
+        );
+
+        return;
+    }
+
+    const existing =
+        orderItemsDraft.find(
+            item =>
+                Number(item.product_id) ===
+                Number(product.id)
+        );
+
+    if (existing) {
+        const newQuantity =
+            existing.quantity + quantity;
+
+        if (newQuantity > Number(product.stock)) {
+            toast(
+                `Estoque insuficiente. Disponível: ${product.stock}`
+            );
+
+            return;
+        }
+
+        existing.quantity = newQuantity;
+
+    } else {
+        orderItemsDraft.push({
+            product_id: Number(product.id),
+            product_name: product.name,
+            sku: product.sku,
+            quantity: quantity,
+            unit_price: Number(product.price)
+        });
+    }
+
+    document
+        .getElementById('order-product')
+        .value = '';
+
+    document
+        .getElementById('order-quantity')
+        .value = 1;
+
+    updateOrderProductPrice();
+
+    renderOrderItems();
+}
+
+
+/* =========================
+   MOSTRAR ITENS
+========================= */
+
+function renderOrderItems() {
+    const tbody =
+        document.getElementById('order-items-table');
+
+    if (!orderItemsDraft.length) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="empty-state">
+                    Nenhum produto adicionado.
+                </td>
+            </tr>
+        `;
+    } else {
+        tbody.innerHTML =
+            orderItemsDraft
+                .map((item, index) => {
+                    const subtotal =
+                        Number(item.unit_price) *
+                        Number(item.quantity);
+
+                    return `
+                        <tr>
+                            <td>
+                                <strong>
+                                    ${esc(item.product_name)}
+                                </strong>
+
+                                <small style="display:block;">
+                                    ${esc(item.sku ?? '')}
+                                </small>
+                            </td>
+
+                            <td>
+                                ${item.quantity}
+                            </td>
+
+                            <td>
+                                ${money(item.unit_price)}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ${money(subtotal)}
+                                </strong>
+                            </td>
+
+                            <td>
+                                <button
+                                    type="button"
+                                    class="small-button danger"
+                                    data-remove-order-item="${index}"
+                                >
+                                    Remover
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                })
+                .join('');
+    }
+
+    const total =
+        orderItemsDraft.reduce(
+            (sum, item) =>
+                sum +
+                (
+                    Number(item.unit_price) *
+                    Number(item.quantity)
+                ),
+            0
+        );
+
+    document
+        .getElementById('order-total-display')
+        .textContent = money(total);
+}
+
+
+/* =========================
+   REMOVER ITEM
+========================= */
+
+function removeOrderItem(index) {
+    orderItemsDraft.splice(index, 1);
+
+    renderOrderItems();
+}
+
+
+/* =========================
+   SALVAR PEDIDO
+========================= */
+
+async function saveOrder(e) {
+    e.preventDefault();
+
+    const error =
+        document.getElementById('order-error');
+
+    error.textContent = '';
+
+    const customerName =
+        document
+            .getElementById('order-customer-name')
+            .value
+            .trim();
+
+    const customerEmail =
+        document
+            .getElementById('order-customer-email')
+            .value
+            .trim();
+
+    if (!customerName) {
+        error.textContent =
+            'Informe o nome do cliente.';
+
+        return;
+    }
+
+    if (!orderItemsDraft.length) {
+        error.textContent =
+            'Adicione pelo menos um produto ao pedido.';
+
+        return;
+    }
+
+    const payload = {
+        customer_name: customerName,
+
+        customer_email:
+            customerEmail || null,
+
+        items:
+            orderItemsDraft.map(item => ({
+                product_id: item.product_id,
+                quantity: item.quantity
+            }))
+    };
+
+    try {
+        await api('/api/orders', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+
+        closeOrder();
+
+        await loadOrders();
+
+        toast('Pedido salvo com sucesso!');
+
+    } catch (err) {
+        error.textContent =
+            err.message;
+    }
+}
+
+
+/* =========================
+   VER PEDIDO
+========================= */
+
+async function viewOrder(id) {
+    try {
+        const order =
+            await api(`/api/orders/${id}`);
+
+        const items =
+            order.items ?? [];
+
+        const text = [
+            `Pedido #${order.id}`,
+            '',
+            `Cliente: ${order.customer_name}`,
+
+            order.customer_email
+                ? `E-mail: ${order.customer_email}`
+                : '',
+
+            '',
+            'Itens:',
+
+            ...items.map(item =>
+                `${item.quantity}x ${item.product_name} | ${money(item.unit_price)} cada | ${money(item.subtotal)}`
+            ),
+
+            '',
+            `TOTAL: ${money(order.total)}`
+        ]
+        .filter(Boolean)
+        .join('\n');
+
+        alert(text);
+
+    } catch (err) {
+        toast(err.message);
+    }
+}
+
+
+/* =========================
+   BOTÕES DA TABELA
+========================= */
+
+async function orderClick(e) {
+    const button =
+        e.target.closest('[data-oa]');
+
+    if (!button) return;
+
+    const id =
+        Number(button.dataset.id);
+
+    if (button.dataset.oa === 'view') {
+        await viewOrder(id);
+    }
+}
+
+
 function renderOrderStats(){['pending','processing','completed','cancelled'].forEach(s=>document.getElementById(`orders-${s}`).textContent=ordersCache.filter(o=>o.status===s).length);}
 function renderOrders(){const q=document.getElementById('order-search').value.trim().toLowerCase(),s=document.getElementById('order-status-filter').value,rows=ordersCache.filter(o=>o.customer.toLowerCase().includes(q)&&(!s||o.status===s));document.getElementById('orders-table').innerHTML=rows.length?rows.map(o=>`<tr><td>#${o.id}</td><td>${esc(o.customer)}</td><td>${money(o.total)}</td><td><span class="badge badge-${o.status}">${t(o.status)}</span></td><td>${when(o.created_at)}</td><td><div class="table-actions"><button class="small-button" data-oa="advance" data-id="${o.id}">→</button><button class="small-button danger" data-oa="delete" data-id="${o.id}">${t('delete')}</button></div></td></tr>`).join(''):`<tr><td colspan="6" class="empty-state">${t('noOrders')}</td></tr>`;}
 function openOrder(){document.getElementById('order-form').reset();document.getElementById('order-error').textContent='';document.getElementById('order-modal').classList.remove('hidden');}

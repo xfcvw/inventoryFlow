@@ -64,7 +64,255 @@
 </div>
 
 <div class="modal-backdrop hidden" id="product-modal"><div class="modal"><div class="modal-header"><div><span class="eyebrow" data-i18n="productForm">PRODUCT FORM</span><h2 id="product-modal-title" data-i18n="newProductTitle">New Product</h2></div><button class="icon-button" id="close-product-modal">×</button></div><form id="product-form" class="form-grid"><div class="input-group"><label data-i18n="productName">Product name</label><input id="product-name" required></div><div class="input-group"><label data-i18n="sku">SKU</label><input id="product-sku" required></div><div class="input-group"><label data-i18n="category">Category</label><input id="product-category" required></div><div class="input-group"><label data-i18n="price">Price</label><input id="product-price" type="number" min="0" step="0.01" required></div><div class="input-group"><label data-i18n="stock">Stock</label><input id="product-stock" type="number" min="0" required></div><div class="input-group"><label data-i18n="minimumStock">Minimum stock</label><input id="product-min-stock" type="number" min="0" required></div><p id="product-error" class="form-error full-width"></p><div class="modal-actions full-width"><button type="button" class="ghost-button" id="cancel-product" data-i18n="cancel">Cancel</button><button type="submit" class="primary-button" data-i18n="saveProduct">Save product</button></div></form></div></div>
-<div class="modal-backdrop hidden" id="order-modal"><div class="modal"><div class="modal-header"><div><span class="eyebrow" data-i18n="orderForm">ORDER FORM</span><h2 data-i18n="newOrderTitle">New Order</h2></div><button class="icon-button" id="close-order-modal">×</button></div><form id="order-form"><div class="input-group"><label data-i18n="customer">Customer</label><input id="order-customer" required></div><div class="input-group"><label data-i18n="total">Total</label><input id="order-total" type="number" min="0" step="0.01" required></div><div class="input-group"><label data-i18n="status">Status</label><select id="order-status"><option value="pending" data-i18n="pending">Pending</option><option value="processing" data-i18n="processing">Processing</option><option value="completed" data-i18n="completed">Completed</option><option value="cancelled" data-i18n="cancelled">Cancelled</option></select></div><p id="order-error" class="form-error"></p><div class="modal-actions"><button type="button" class="ghost-button" id="cancel-order" data-i18n="cancel">Cancel</button><button type="submit" class="primary-button" data-i18n="saveOrder">Save order</button></div></form></div></div>
-<div id="toast" class="toast hidden"></div>
+<div class="modal-backdrop hidden" id="order-modal">
+    <div class="modal">
+
+        <div class="modal-header">
+            <div>
+                <span class="eyebrow">
+                    FORMULÁRIO DE PEDIDO
+                </span>
+
+                <h2>Novo Pedido</h2>
+            </div>
+
+            <button
+                class="icon-button"
+                id="close-order-modal"
+                type="button"
+            >
+                ×
+            </button>
+        </div>
+
+
+        <form id="order-form">
+
+            <!-- CLIENTE -->
+            <div class="form-grid">
+
+                <div class="input-group">
+                    <label for="order-customer-name">
+                        Nome do cliente
+                    </label>
+
+                    <input
+                        id="order-customer-name"
+                        type="text"
+                        required
+                        placeholder="Ex: João Silva"
+                    >
+                </div>
+
+
+                <div class="input-group">
+                    <label for="order-customer-email">
+                        E-mail
+                    </label>
+
+                    <input
+                        id="order-customer-email"
+                        type="email"
+                        placeholder="Ex: joao@email.com"
+                    >
+                </div>
+
+            </div>
+
+
+            <!-- ADICIONAR PRODUTO -->
+            <div
+                class="panel"
+                style="margin-top: 18px;"
+            >
+
+                <div class="panel-header">
+                    <div>
+                        <h3>Adicionar produto</h3>
+
+                        <p>
+                            O preço será preenchido automaticamente.
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="form-grid">
+
+                    <!-- PRODUTO -->
+                    <div class="input-group">
+
+                        <label for="order-product">
+                            Produto
+                        </label>
+
+                        <select id="order-product">
+
+                            <option value="">
+                                Selecione um produto
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- QUANTIDADE -->
+                    <div class="input-group">
+
+                        <label for="order-quantity">
+                            Quantidade
+                        </label>
+
+                        <input
+                            id="order-quantity"
+                            type="number"
+                            min="1"
+                            value="1"
+                        >
+
+                    </div>
+
+
+                    <!-- PREÇO -->
+                    <div class="input-group">
+
+                        <label for="order-unit-price">
+                            Preço unitário
+                        </label>
+
+                        <input
+                            id="order-unit-price"
+                            type="text"
+                            value="R$ 0,00"
+                            readonly
+                        >
+
+                    </div>
+
+
+                    <!-- SUBTOTAL -->
+                    <div class="input-group">
+
+                        <label for="order-item-subtotal">
+                            Subtotal
+                        </label>
+
+                        <input
+                            id="order-item-subtotal"
+                            type="text"
+                            value="R$ 0,00"
+                            readonly
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    id="add-order-item"
+                    style="margin-top: 12px;"
+                >
+                    + Adicionar item
+                </button>
+
+            </div>
+
+
+            <!-- ITENS DO PEDIDO -->
+            <div
+                class="table-wrapper"
+                style="margin-top: 18px;"
+            >
+
+                <table>
+
+                    <thead>
+                        <tr>
+    <th>Pedido</th>
+    <th>Cliente</th>
+    <th>Itens</th>
+    <th>Total</th>
+    <th>Status</th>
+    <th>Data</th>
+    <th>Ações</th>
+</tr>
+                    </thead>
+
+
+                    <tbody id="order-items-table">
+
+                        <tr>
+                            <td
+                                colspan="5"
+                                class="empty-state"
+                            >
+                                Nenhum produto adicionado.
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- TOTAL -->
+            <div
+                style="
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 12px;
+                    align-items: center;
+                    margin-top: 18px;
+                    font-size: 18px;
+                "
+            >
+
+                <strong>Total:</strong>
+
+                <strong id="order-total-display">
+                    R$ 0,00
+                </strong>
+
+            </div>
+
+
+            <!-- ERROS -->
+            <p
+                id="order-error"
+                class="form-error"
+            ></p>
+
+
+            <!-- BOTÕES -->
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="ghost-button"
+                    id="cancel-order"
+                >
+                    Cancelar
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    Salvar pedido
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
 <script src="{{ asset('assets/i18n.js') }}"></script><script src="{{ asset('assets/app.js') }}"></script>
 </body></html>
