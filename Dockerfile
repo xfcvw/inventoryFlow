@@ -5,6 +5,10 @@ WORKDIR /var/www/html
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     unzip \
+    libpq-dev \
+    libicu-dev \
+    libonig-dev \
+    libcurl4-openssl-dev \
     && docker-php-ext-install \
     bcmath \
     curl \
