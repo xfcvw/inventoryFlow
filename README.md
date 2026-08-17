@@ -1,6 +1,6 @@
 # InventoryFlow
 
-InventoryFlow é um sistema web bilíngue de gestão de estoque e pedidos criado como projeto de aprendizagem e portfólio.
+InventoryFlow é um sistema web bilíngue de gestão de estoque e pedidos criado como projeto e portfólio.
 
 ## Stack ativa
 
