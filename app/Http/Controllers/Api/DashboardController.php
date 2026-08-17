@@ -79,8 +79,9 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $totalOrders = Order::query()
-            ->count();
+         $totalOrders = Order::query()
+         ->where('user_id', $userId)
+         ->count();
 
 
         /*
