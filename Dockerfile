@@ -9,4 +9,4 @@ COPY docker/php/entrypoint.sh /usr/local/bin/inventoryflow-entrypoint
 COPY . .
 RUN chmod +x /usr/local/bin/inventoryflow-entrypoint
 ENTRYPOINT ["inventoryflow-entrypoint"]
-CMD ["php-fpm"]
+CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
