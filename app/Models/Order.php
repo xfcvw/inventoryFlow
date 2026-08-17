@@ -10,8 +10,14 @@ class Order extends Model
 {
     protected $fillable = [
         'user_id',
+
+        // Campo antigo da tabela
+        'customer',
+
+        // Campos novos
         'customer_name',
         'customer_email',
+
         'total',
         'status',
     ];

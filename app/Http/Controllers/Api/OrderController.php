@@ -26,7 +26,7 @@ class OrderController extends Controller
 
     public function show(Request $request, Order $order): JsonResponse
     {
-        if ($order->user_id !== $request->user()->id) {
+        if ((int) $order->user_id !== (int) $request->user()->id) {
             abort(404);
         }
 
@@ -78,14 +78,20 @@ class OrderController extends Controller
 
             /*
             |--------------------------------------------------------------------------
-            | Criar pedido
+            | CRIA O PEDIDO
             |--------------------------------------------------------------------------
             */
 
             $order = Order::create([
                 'user_id' => $userId,
+
+                // Campo antigo obrigatório
+                'customer' => $data['customer_name'],
+
+                // Campos novos
                 'customer_name' => $data['customer_name'],
                 'customer_email' => $data['customer_email'] ?? null,
+
                 'total' => 0,
                 'status' => 'pending',
             ]);
@@ -96,16 +102,12 @@ class OrderController extends Controller
 
             /*
             |--------------------------------------------------------------------------
-            | Adicionar produtos
+            | ITENS DO PEDIDO
             |--------------------------------------------------------------------------
             */
 
             foreach ($data['items'] as $item) {
 
-                /*
-                 * Procura somente produtos pertencentes
-                 * ao usuário logado.
-                 */
                 $product = Product::query()
                     ->where('user_id', $userId)
                     ->lockForUpdate()
@@ -126,12 +128,11 @@ class OrderController extends Controller
 
                 /*
                 |--------------------------------------------------------------------------
-                | Conferir estoque
+                | VERIFICA ESTOQUE
                 |--------------------------------------------------------------------------
                 */
 
                 if ($product->stock < $quantity) {
-
                     throw ValidationException::withMessages([
                         'items' => [
                             "Estoque insuficiente para {$product->name}. Disponível: {$product->stock}.",
@@ -142,18 +143,11 @@ class OrderController extends Controller
 
                 /*
                 |--------------------------------------------------------------------------
-                | Preço vem do banco
+                | PREÇO DO BANCO
                 |--------------------------------------------------------------------------
                 */
 
                 $unitPrice = (float) $product->price;
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Calcular subtotal
-                |--------------------------------------------------------------------------
-                */
 
                 $subtotal = round(
                     $unitPrice * $quantity,
@@ -163,7 +157,7 @@ class OrderController extends Controller
 
                 /*
                 |--------------------------------------------------------------------------
-                | Salvar item do pedido
+                | SALVA O ITEM
                 |--------------------------------------------------------------------------
                 */
 
@@ -179,7 +173,7 @@ class OrderController extends Controller
 
                 /*
                 |--------------------------------------------------------------------------
-                | Descontar estoque
+                | DESCONTA DO ESTOQUE
                 |--------------------------------------------------------------------------
                 */
 
@@ -191,7 +185,7 @@ class OrderController extends Controller
 
                 /*
                 |--------------------------------------------------------------------------
-                | Somar ao total
+                | SOMA O TOTAL
                 |--------------------------------------------------------------------------
                 */
 
@@ -201,7 +195,7 @@ class OrderController extends Controller
 
             /*
             |--------------------------------------------------------------------------
-            | Atualizar total final
+            | TOTAL FINAL
             |--------------------------------------------------------------------------
             */
 
