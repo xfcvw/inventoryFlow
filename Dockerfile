@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends git unzip libpq
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/inventoryflow.ini
 COPY docker/php/entrypoint.sh /usr/local/bin/inventoryflow-entrypoint
+COPY . .
 RUN chmod +x /usr/local/bin/inventoryflow-entrypoint
 ENTRYPOINT ["inventoryflow-entrypoint"]
 CMD ["php-fpm"]
