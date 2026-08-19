@@ -1,31 +1,385 @@
 const translations = {
-  en: {
-    brandTag:'Inventory Management', brandTitle:'Smart inventory. Better decisions.', brandDescription:'Manage your products, inventory and orders through a simple and efficient platform.', welcome:'WELCOME BACK', loginTitle:'Sign in to your account', loginDescription:'Use the seeded demo account to access the system.', email:'Email', password:'Password', remember:'Remember me', signIn:'Sign in', demoCredentials:'Demo credentials', portfolio:'Portfolio project developed by',
-    navDashboard:'Dashboard', navProducts:'Products', navInventory:'Inventory', navOrders:'Orders', logout:'Logout', apiConnected:'API connected', overview:'OVERVIEW', dashboardTitle:'Dashboard', dashboardSubtitle:'Monitor your inventory and business activity.', totalProducts:'Total Products', registeredProducts:'registered products', totalUnits:'Units in Stock', availableUnits:'available units', lowStock:'Low Stock', needsAttention:'needs attention', totalOrders:'Orders', registeredOrders:'registered orders', recentMovements:'Recent Inventory Movements', recentMovementsSubtitle:'Latest stock entries and exits.', product:'Product', type:'Type', quantity:'Quantity', date:'Date', lowStockProducts:'Low Stock Products', lowStockProductsSubtitle:'Products at or below the minimum level.', noMovements:'No movements registered yet.', noLowStock:'No low-stock products.',
-    catalog:'CATALOG', productsTitle:'Products', productsSubtitle:'Create, search, edit and organize your products.', newProduct:'+ New product', searchProducts:'Search products...', allCategories:'All categories', sku:'SKU', category:'Category', price:'Price', stock:'Stock', actions:'Actions', edit:'Edit', delete:'Delete', productForm:'PRODUCT FORM', newProductTitle:'New Product', editProductTitle:'Edit Product', productName:'Product name', minimumStock:'Minimum stock', cancel:'Cancel', saveProduct:'Save product', confirmDeleteProduct:'Delete this product?', noProducts:'No products found.', productSaved:'Product saved successfully.', productDeleted:'Product deleted.',
-    stockControl:'STOCK CONTROL', inventoryTitle:'Inventory', inventorySubtitle:'Register stock entries and exits and review movement history.', newMovement:'New movement', newMovementSubtitle:'Update the stock level of a product.', stockIn:'Stock in', stockOut:'Stock out', registerMovement:'Register movement', movementHistory:'Movement history', movementHistorySubtitle:'All registered inventory changes.', selectProduct:'Select a product', movementSaved:'Inventory movement registered.',
-    sales:'SALES', ordersTitle:'Orders', ordersSubtitle:'Track customer orders and their current status.', newOrder:'+ New order', pending:'Pending', processing:'Processing', completed:'Completed', cancelled:'Cancelled', searchOrders:'Search by customer...', allStatuses:'All statuses', orderId:'Order', customer:'Customer', total:'Total', status:'Status', orderForm:'ORDER FORM', newOrderTitle:'New Order', saveOrder:'Save order', confirmDeleteOrder:'Delete this order?', noOrders:'No orders found.', orderSaved:'Order saved.', orderDeleted:'Order deleted.', requestFailed:'The request could not be completed.'
-  },
-  pt: {
-    brandTag:'Gestão de Estoque', brandTitle:'Estoque inteligente. Melhores decisões.', brandDescription:'Gerencie seus produtos, estoque e pedidos por meio de uma plataforma simples e eficiente.', welcome:'BEM-VINDO DE VOLTA', loginTitle:'Entre na sua conta', loginDescription:'Use a conta de demonstração criada no banco para acessar o sistema.', email:'E-mail', password:'Senha', remember:'Lembrar de mim', signIn:'Entrar', demoCredentials:'Credenciais de demonstração', portfolio:'Projeto de portfólio desenvolvido por',
-    navDashboard:'Painel', navProducts:'Produtos', navInventory:'Estoque', navOrders:'Pedidos', logout:'Sair', apiConnected:'API conectada', overview:'VISÃO GERAL', dashboardTitle:'Painel', dashboardSubtitle:'Acompanhe seu estoque e a atividade do negócio.', totalProducts:'Total de Produtos', registeredProducts:'produtos cadastrados', totalUnits:'Unidades em Estoque', availableUnits:'unidades disponíveis', lowStock:'Estoque Baixo', needsAttention:'precisam de atenção', totalOrders:'Pedidos', registeredOrders:'pedidos cadastrados', recentMovements:'Movimentações Recentes', recentMovementsSubtitle:'Últimas entradas e saídas de estoque.', product:'Produto', type:'Tipo', quantity:'Quantidade', date:'Data', lowStockProducts:'Produtos com Estoque Baixo', lowStockProductsSubtitle:'Produtos no nível mínimo ou abaixo dele.', noMovements:'Nenhuma movimentação cadastrada.', noLowStock:'Nenhum produto com estoque baixo.',
-    catalog:'CATÁLOGO', productsTitle:'Produtos', productsSubtitle:'Cadastre, pesquise, edite e organize seus produtos.', newProduct:'+ Novo produto', searchProducts:'Pesquisar produtos...', allCategories:'Todas as categorias', sku:'SKU', category:'Categoria', price:'Preço', stock:'Estoque', actions:'Ações', edit:'Editar', delete:'Excluir', productForm:'FORMULÁRIO DE PRODUTO', newProductTitle:'Novo Produto', editProductTitle:'Editar Produto', productName:'Nome do produto', minimumStock:'Estoque mínimo', cancel:'Cancelar', saveProduct:'Salvar produto', confirmDeleteProduct:'Excluir este produto?', noProducts:'Nenhum produto encontrado.', productSaved:'Produto salvo com sucesso.', productDeleted:'Produto excluído.',
-    stockControl:'CONTROLE DE ESTOQUE', inventoryTitle:'Estoque', inventorySubtitle:'Registre entradas e saídas e acompanhe o histórico.', newMovement:'Nova movimentação', newMovementSubtitle:'Atualize a quantidade de um produto.', stockIn:'Entrada', stockOut:'Saída', registerMovement:'Registrar movimentação', movementHistory:'Histórico de movimentações', movementHistorySubtitle:'Todas as alterações de estoque registradas.', selectProduct:'Selecione um produto', movementSaved:'Movimentação de estoque registrada.',
-    sales:'VENDAS', ordersTitle:'Pedidos', ordersSubtitle:'Acompanhe os pedidos dos clientes e seus status.', newOrder:'+ Novo pedido', pending:'Pendente', processing:'Processando', completed:'Concluído', cancelled:'Cancelado', searchOrders:'Pesquisar por cliente...', allStatuses:'Todos os status', orderId:'Pedido', customer:'Cliente', total:'Total', status:'Status', orderForm:'FORMULÁRIO DE PEDIDO', newOrderTitle:'Novo Pedido', saveOrder:'Salvar pedido', confirmDeleteOrder:'Excluir este pedido?', noOrders:'Nenhum pedido encontrado.', orderSaved:'Pedido salvo.', orderDeleted:'Pedido excluído.', requestFailed:'Não foi possível concluir a solicitação.'
-  }
+    en: {
+        brandTag: 'Inventory Management',
+        brandTitle: 'Smart inventory. Better decisions.',
+        brandDescription: 'Manage your products, inventory and orders through a simple and efficient platform.',
+        welcome: 'WELCOME BACK',
+        loginTitle: 'Sign in to your account',
+        loginDescription: 'Use the demo account or create your own workspace.',
+        email: 'Email',
+        password: 'Password',
+        remember: 'Remember me',
+        signIn: 'Sign in',
+        demoCredentials: 'Demo credentials',
+        portfolio: 'Portfolio project developed by',
+        noAccount: 'No account yet?',
+        createAccount: 'Create account',
+        alreadyAccount: 'Already have an account?',
+        saasTag: 'MULTI-TENANT SaaS',
+        registerBrandTitle: 'Create your workspace. Run your inventory.',
+        registerBrandDescription: 'Your account owns a workspace where products, orders and inventory remain isolated from other companies.',
+        startFree: 'START FREE',
+        registerTitle: 'Create your account',
+        registerDescription: 'The first account becomes the owner of the new workspace.',
+        name: 'Name',
+        workspaceName: 'Workspace name',
+        confirmPassword: 'Confirm password',
+        createWorkspace: 'Create workspace',
+
+        workspace: 'Workspace',
+        navDashboard: 'Dashboard',
+        navProducts: 'Products',
+        navInventory: 'Inventory',
+        navOrders: 'Orders',
+        navSettings: 'Settings',
+        logout: 'Logout',
+        saasConnected: 'SaaS workspace connected',
+        workspaceChanged: 'Workspace changed.',
+        workspaceSaved: 'Workspace saved.',
+
+        overview: 'OVERVIEW',
+        dashboardTitle: 'Dashboard',
+        dashboardSubtitle: 'Monitor the selected workspace.',
+        totalProducts: 'Total Products',
+        registeredProducts: 'registered products',
+        totalUnits: 'Units in Stock',
+        availableUnits: 'available units',
+        lowStock: 'Low Stock',
+        needsAttention: 'needs attention',
+        totalOrders: 'Orders',
+        registeredOrders: 'registered orders',
+        recentMovements: 'Recent Inventory Movements',
+        recentMovementsSubtitle: 'Latest stock entries and exits.',
+        product: 'Product',
+        type: 'Type',
+        quantity: 'Quantity',
+        actor: 'Actor',
+        date: 'Date',
+        lowStockProducts: 'Low Stock Products',
+        lowStockProductsSubtitle: 'Products at or below the minimum level.',
+        noMovements: 'No movements registered yet.',
+        noLowStock: 'No low-stock products.',
+
+        catalog: 'CATALOG',
+        productsTitle: 'Products',
+        productsSubtitle: 'Products belong to the selected workspace, not directly to your personal account.',
+        newProduct: '+ New product',
+        searchProducts: 'Search products...',
+        allCategories: 'All categories',
+        sku: 'SKU',
+        category: 'Category',
+        price: 'Price',
+        stock: 'Stock',
+        actions: 'Actions',
+        edit: 'Edit',
+        delete: 'Delete',
+        readOnly: 'Read only',
+        productForm: 'PRODUCT FORM',
+        newProductTitle: 'New Product',
+        editProductTitle: 'Edit Product',
+        productName: 'Product name',
+        minimumStock: 'Minimum stock',
+        cancel: 'Cancel',
+        saveProduct: 'Save product',
+        confirmDeleteProduct: 'Delete this product?',
+        noProducts: 'No products found.',
+        productSaved: 'Product saved successfully.',
+        productDeleted: 'Product deleted.',
+
+        stockControl: 'STOCK CONTROL',
+        inventoryTitle: 'Inventory',
+        inventorySubtitle: 'Every movement is tied to the workspace and the user who performed it.',
+        newMovement: 'New movement',
+        newMovementSubtitle: 'Update the stock level of a product.',
+        stockIn: 'Stock in',
+        stockOut: 'Stock out',
+        registerMovement: 'Register movement',
+        movementHistory: 'Movement history',
+        movementHistorySubtitle: 'All registered inventory changes.',
+        selectProduct: 'Select a product',
+        movementSaved: 'Inventory movement registered.',
+
+        sales: 'SALES',
+        ordersTitle: 'Orders',
+        ordersSubtitle: 'Orders are isolated inside the selected workspace.',
+        newOrder: '+ New order',
+        pending: 'Pending',
+        processing: 'Processing',
+        completed: 'Completed',
+        cancelled: 'Cancelled',
+        searchOrders: 'Search by customer...',
+        allStatuses: 'All statuses',
+        orderId: 'Order',
+        customer: 'Customer',
+        total: 'Total',
+        status: 'Status',
+        orderForm: 'ORDER FORM',
+        newOrderTitle: 'New Order',
+        saveOrder: 'Save order',
+        confirmDeleteOrder: 'Delete this order?',
+        noOrders: 'No orders found.',
+        orderSaved: 'Order saved.',
+        orderDeleted: 'Order deleted.',
+
+        saasSettings: 'SAAS SETTINGS',
+        workspaceSettings: 'Workspace Settings',
+        workspaceSettingsSubtitle: "The workspace is the tenant boundary that separates one company's data from another.",
+        generalSettings: 'General',
+        generalSettingsSubtitle: 'Basic information about the selected workspace.',
+        workspaceSlug: 'Workspace slug',
+        yourRole: 'Your role',
+        saveWorkspace: 'Save workspace',
+        planUsage: 'Plan & Usage',
+        planUsageSubtitle: 'Limits are enforced on the server, not only in the interface.',
+        currentPlan: 'Current plan',
+        productsUsage: 'Products',
+        membersUsage: 'Members',
+        billingLater: 'Real billing is intentionally not connected yet. First we are learning multi-tenancy and authorization correctly.',
+
+
+        navCatalog: 'Catalog',
+        navCustomers: 'Customers',
+        navReports: 'Reports',
+        navTeam: 'Team',
+        navBilling: 'Billing',
+        navAudit: 'Audit',
+        monthOrders: 'Month orders',
+        monthRevenue: 'Month revenue',
+        thisMonth: 'this month',
+        warehouse: 'Warehouse',
+        supplier: 'Supplier',
+        categories: 'Categories',
+        suppliers: 'Suppliers',
+        warehouses: 'Warehouses',
+        catalogManagement: 'Catalog management',
+        catalogManagementSubtitle: 'Categories, suppliers and warehouses used by the rest of the system.',
+        reason: 'Reason',
+        balance: 'Balance',
+        items: 'Items',
+        customers: 'Customers',
+        customersSubtitle: 'Reusable customer records for your sales workflow.',
+        phone: 'Phone',
+        reports: 'Reports',
+        reportsSubtitle: 'Sales and inventory indicators built with aggregate queries.',
+        team: 'Team',
+        teamSubtitle: 'Invite members and control permissions with roles.',
+        billing: 'Billing',
+        billingSubtitle: 'Local billing simulator with real SaaS plan limits.',
+        auditLog: 'Audit log',
+        auditSubtitle: 'Who changed what and when.',
+
+        requestFailed: 'The request could not be completed.',
+    },
+
+    pt: {
+        brandTag: 'Gestão de Estoque',
+        brandTitle: 'Estoque inteligente. Melhores decisões.',
+        brandDescription: 'Gerencie seus produtos, estoque e pedidos por meio de uma plataforma simples e eficiente.',
+        welcome: 'BEM-VINDO DE VOLTA',
+        loginTitle: 'Entre na sua conta',
+        loginDescription: 'Use a conta de demonstração ou crie seu próprio workspace.',
+        email: 'E-mail',
+        password: 'Senha',
+        remember: 'Lembrar de mim',
+        signIn: 'Entrar',
+        demoCredentials: 'Credenciais de demonstração',
+        portfolio: 'Projeto de portfólio desenvolvido por',
+        noAccount: 'Ainda não tem conta?',
+        createAccount: 'Criar conta',
+        alreadyAccount: 'Já possui uma conta?',
+        saasTag: 'SAAS MULTI-TENANT',
+        registerBrandTitle: 'Crie seu workspace. Controle seu estoque.',
+        registerBrandDescription: 'Sua conta possui um workspace onde produtos, pedidos e estoque ficam separados dos dados de outras empresas.',
+        startFree: 'COMECE GRÁTIS',
+        registerTitle: 'Crie sua conta',
+        registerDescription: 'A primeira conta se torna dona do novo workspace.',
+        name: 'Nome',
+        workspaceName: 'Nome do workspace',
+        confirmPassword: 'Confirmar senha',
+        createWorkspace: 'Criar workspace',
+
+        workspace: 'Workspace',
+        navDashboard: 'Painel',
+        navProducts: 'Produtos',
+        navInventory: 'Estoque',
+        navOrders: 'Pedidos',
+        navSettings: 'Configurações',
+        logout: 'Sair',
+        saasConnected: 'Workspace SaaS conectado',
+        workspaceChanged: 'Workspace alterado.',
+        workspaceSaved: 'Workspace salvo.',
+
+        overview: 'VISÃO GERAL',
+        dashboardTitle: 'Painel',
+        dashboardSubtitle: 'Acompanhe o workspace selecionado.',
+        totalProducts: 'Total de Produtos',
+        registeredProducts: 'produtos cadastrados',
+        totalUnits: 'Unidades em Estoque',
+        availableUnits: 'unidades disponíveis',
+        lowStock: 'Estoque Baixo',
+        needsAttention: 'precisam de atenção',
+        totalOrders: 'Pedidos',
+        registeredOrders: 'pedidos cadastrados',
+        recentMovements: 'Movimentações Recentes',
+        recentMovementsSubtitle: 'Últimas entradas e saídas de estoque.',
+        product: 'Produto',
+        type: 'Tipo',
+        quantity: 'Quantidade',
+        actor: 'Responsável',
+        date: 'Data',
+        lowStockProducts: 'Produtos com Estoque Baixo',
+        lowStockProductsSubtitle: 'Produtos no nível mínimo ou abaixo dele.',
+        noMovements: 'Nenhuma movimentação cadastrada.',
+        noLowStock: 'Nenhum produto com estoque baixo.',
+
+        catalog: 'CATÁLOGO',
+        productsTitle: 'Produtos',
+        productsSubtitle: 'Os produtos pertencem ao workspace selecionado, e não diretamente à sua conta pessoal.',
+        newProduct: '+ Novo produto',
+        searchProducts: 'Pesquisar produtos...',
+        allCategories: 'Todas as categorias',
+        sku: 'SKU',
+        category: 'Categoria',
+        price: 'Preço',
+        stock: 'Estoque',
+        actions: 'Ações',
+        edit: 'Editar',
+        delete: 'Excluir',
+        readOnly: 'Somente leitura',
+        productForm: 'FORMULÁRIO DE PRODUTO',
+        newProductTitle: 'Novo Produto',
+        editProductTitle: 'Editar Produto',
+        productName: 'Nome do produto',
+        minimumStock: 'Estoque mínimo',
+        cancel: 'Cancelar',
+        saveProduct: 'Salvar produto',
+        confirmDeleteProduct: 'Excluir este produto?',
+        noProducts: 'Nenhum produto encontrado.',
+        productSaved: 'Produto salvo com sucesso.',
+        productDeleted: 'Produto excluído.',
+
+        stockControl: 'CONTROLE DE ESTOQUE',
+        inventoryTitle: 'Estoque',
+        inventorySubtitle: 'Cada movimentação fica ligada ao workspace e ao usuário que a realizou.',
+        newMovement: 'Nova movimentação',
+        newMovementSubtitle: 'Atualize a quantidade de um produto.',
+        stockIn: 'Entrada',
+        stockOut: 'Saída',
+        registerMovement: 'Registrar movimentação',
+        movementHistory: 'Histórico de movimentações',
+        movementHistorySubtitle: 'Todas as alterações de estoque registradas.',
+        selectProduct: 'Selecione um produto',
+        movementSaved: 'Movimentação de estoque registrada.',
+
+        sales: 'VENDAS',
+        ordersTitle: 'Pedidos',
+        ordersSubtitle: 'Os pedidos ficam isolados dentro do workspace selecionado.',
+        newOrder: '+ Novo pedido',
+        pending: 'Pendente',
+        processing: 'Processando',
+        completed: 'Concluído',
+        cancelled: 'Cancelado',
+        searchOrders: 'Pesquisar por cliente...',
+        allStatuses: 'Todos os status',
+        orderId: 'Pedido',
+        customer: 'Cliente',
+        total: 'Total',
+        status: 'Status',
+        orderForm: 'FORMULÁRIO DE PEDIDO',
+        newOrderTitle: 'Novo Pedido',
+        saveOrder: 'Salvar pedido',
+        confirmDeleteOrder: 'Excluir este pedido?',
+        noOrders: 'Nenhum pedido encontrado.',
+        orderSaved: 'Pedido salvo.',
+        orderDeleted: 'Pedido excluído.',
+
+        saasSettings: 'CONFIGURAÇÕES SAAS',
+        workspaceSettings: 'Configurações do Workspace',
+        workspaceSettingsSubtitle: 'O workspace é a fronteira do tenant que separa os dados de uma empresa dos dados de outra.',
+        generalSettings: 'Geral',
+        generalSettingsSubtitle: 'Informações básicas do workspace selecionado.',
+        workspaceSlug: 'Slug do workspace',
+        yourRole: 'Seu cargo',
+        saveWorkspace: 'Salvar workspace',
+        planUsage: 'Plano e Uso',
+        planUsageSubtitle: 'Os limites são validados no servidor, e não apenas na interface.',
+        currentPlan: 'Plano atual',
+        productsUsage: 'Produtos',
+        membersUsage: 'Membros',
+        billingLater: 'O pagamento real ainda não foi conectado de propósito. Primeiro estamos aprendendo multi-tenancy e autorização corretamente.',
+
+
+        navCatalog: 'Catálogo',
+        navCustomers: 'Clientes',
+        navReports: 'Relatórios',
+        navTeam: 'Equipe',
+        navBilling: 'Planos',
+        navAudit: 'Auditoria',
+        monthOrders: 'Pedidos no mês',
+        monthRevenue: 'Receita no mês',
+        thisMonth: 'neste mês',
+        warehouse: 'Depósito',
+        supplier: 'Fornecedor',
+        categories: 'Categorias',
+        suppliers: 'Fornecedores',
+        warehouses: 'Depósitos',
+        catalogManagement: 'Gestão do catálogo',
+        catalogManagementSubtitle: 'Categorias, fornecedores e depósitos usados pelo restante do sistema.',
+        reason: 'Motivo',
+        balance: 'Saldo',
+        items: 'Itens',
+        customers: 'Clientes',
+        customersSubtitle: 'Cadastros reutilizáveis de clientes para o fluxo de vendas.',
+        phone: 'Telefone',
+        reports: 'Relatórios',
+        reportsSubtitle: 'Indicadores de vendas e estoque criados com consultas agregadas.',
+        team: 'Equipe',
+        teamSubtitle: 'Convide membros e controle permissões usando cargos.',
+        billing: 'Planos',
+        billingSubtitle: 'Simulador local de cobrança com limites SaaS reais.',
+        auditLog: 'Log de auditoria',
+        auditSubtitle: 'Quem alterou o quê e quando.',
+
+        requestFailed: 'Não foi possível concluir a solicitação.',
+    },
 };
-function getCurrentLanguage(){ return localStorage.getItem('language') || 'en'; }
-function t(key){ const lang=getCurrentLanguage(); return translations[lang]?.[key] ?? key; }
-function applyLanguage(language){
-  if(!translations[language]) language='en';
-  localStorage.setItem('language',language);
-  document.documentElement.lang=language==='pt'?'pt-BR':'en';
-  document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.dataset.i18n; if(translations[language][k]) el.textContent=translations[language][k]; });
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{ const k=el.dataset.i18nPlaceholder; if(translations[language][k]) el.placeholder=translations[language][k]; });
-  document.querySelectorAll('#language-select').forEach(sel=>sel.value=language);
-  document.dispatchEvent(new CustomEvent('languageChanged'));
+
+function getCurrentLanguage() {
+    return localStorage.getItem('language') || 'en';
 }
-document.addEventListener('DOMContentLoaded',()=>{
-  applyLanguage(getCurrentLanguage());
-  document.querySelectorAll('#language-select').forEach(sel=>sel.addEventListener('change',e=>applyLanguage(e.target.value)));
+
+function t(key) {
+    const language = getCurrentLanguage();
+    return translations[language]?.[key] ?? key;
+}
+
+function applyLanguage(language) {
+    if (!translations[language]) language = 'en';
+
+    localStorage.setItem('language', language);
+    document.documentElement.lang = language === 'pt' ? 'pt-BR' : 'en';
+
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.dataset.i18n;
+        if (translations[language][key]) element.textContent = translations[language][key];
+    });
+
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+        const key = element.dataset.i18nPlaceholder;
+        if (translations[language][key]) element.placeholder = translations[language][key];
+    });
+
+    document.querySelectorAll('#language-select').forEach(select => {
+        select.value = language;
+    });
+
+    document.dispatchEvent(new CustomEvent('languageChanged'));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    applyLanguage(getCurrentLanguage());
+
+    document.querySelectorAll('#language-select').forEach(select => {
+        select.addEventListener('change', event => applyLanguage(event.target.value));
+    });
 });

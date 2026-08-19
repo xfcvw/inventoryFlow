@@ -1,7 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd" bootstrap="vendor/autoload.php" colors="true">
-  <testsuites><testsuite name="Feature"><directory>tests/Feature</directory></testsuite></testsuites>
-  <php>
-    <env name="APP_ENV" value="testing"/><env name="CACHE_STORE" value="array"/><env name="DB_CONNECTION" value="sqlite"/><env name="DB_DATABASE" value=":memory:"/><env name="MAIL_MAILER" value="array"/><env name="QUEUE_CONNECTION" value="sync"/><env name="SESSION_DRIVER" value="array"/><env name="LOG_CHANNEL" value="null"/>
-  </php>
+
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+    bootstrap="vendor/autoload.php"
+    colors="true"
+>
+
+    <testsuites>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+
+    <php>
+
+        <!--
+        ============================================================
+        AMBIENTE DE TESTES
+        ============================================================
+
+        force="true" garante que as variáveis do Docker
+        NÃO sobrescrevam as configurações dos testes.
+        -->
+
+        <env
+            name="APP_ENV"
+            value="testing"
+            force="true"
+        />
+
+        <env
+            name="CACHE_STORE"
+            value="array"
+            force="true"
+        />
+
+        <!-- Banco isolado somente para testes -->
+        <env
+            name="DB_CONNECTION"
+            value="sqlite"
+            force="true"
+        />
+
+        <env
+            name="DB_DATABASE"
+            value=":memory:"
+            force="true"
+        />
+
+        <!-- E-mails não são enviados durante testes -->
+        <env
+            name="MAIL_MAILER"
+            value="array"
+            force="true"
+        />
+
+        <!-- Filas são executadas imediatamente -->
+        <env
+            name="QUEUE_CONNECTION"
+            value="sync"
+            force="true"
+        />
+
+        <!-- Sessão temporária -->
+        <env
+            name="SESSION_DRIVER"
+            value="array"
+            force="true"
+        />
+
+        <!-- Não precisamos gerar logs reais -->
+        <env
+            name="LOG_CHANNEL"
+            value="null"
+            force="true"
+        />
+
+    </php>
+
 </phpunit>

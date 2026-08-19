@@ -1,102 +1,161 @@
-# InventoryFlow
+# InventoryFlow SaaS — Complete Learning MVP
 
-InventoryFlow é um sistema web bilíngue de gestão de estoque e pedidos criado como projeto e portfólio.
+InventoryFlow is a bilingual, multi-tenant SaaS inventory and sales management application built as a learning and portfolio project.
 
-## Stack ativa
+## Stack
 
-- PHP 8.4 no container
+- PHP 8.4
 - Laravel 13
-- Laravel Sanctum
 - PostgreSQL 18
-- HTML5 / CSS3 / JavaScript
-- REST API
-- Docker + Docker Compose
-- Nginx + PHP-FPM
+- Laravel Sanctum
+- Blade
+- HTML5 / CSS3 / Vanilla JavaScript
+- Docker Compose
+- Nginx
+- Mailpit for local email testing
 - PHPUnit
 - GitHub Actions
-- preparação para Google Cloud Run + Cloud SQL
 
-## Funcionalidades
+## Main SaaS features
 
-- login real com usuário salvo no PostgreSQL;
-- sessão Laravel e proteção CSRF;
-- API autenticada;
-- dashboard;
-- CRUD de produtos;
-- pesquisa e filtros;
-- estoque mínimo;
-- entrada e saída de estoque;
-- bloqueio de estoque negativo;
-- histórico de movimentações;
-- pedidos e mudança de status;
-- dados isolados por usuário;
-- português e inglês;
-- layout responsivo;
-- testes automatizados.
+- Account registration, login, logout and password reset
+- Multi-tenant workspaces
+- Workspace switcher
+- Role-based access control: Owner, Admin, Manager, Member and Viewer
+- Team invitations by email
+- Local subscription / billing simulator with Free, Pro and Business plans
+- Product limits, member limits and warehouse limits enforced by the backend
+- Product CRUD
+- Categories
+- Suppliers
+- Customers
+- Multiple warehouses
+- Stock by warehouse
+- Stock in / stock out movements
+- Stock cannot become negative
+- Low-stock notifications
+- Orders with multiple order items
+- Automatic stock reduction when an order is processed
+- Automatic stock restoration when a processed order is cancelled
+- Dashboard
+- Sales and inventory reports
+- Audit log
+- Workspace settings: currency, locale, timezone and business type
+- English / Portuguese UI
+- PostgreSQL data persistence
+- Automated tests
+- CI workflow
 
-## Rodar no Windows / Docker Desktop
+## Important billing note
 
-1. Extraia o projeto.
-2. Abra a pasta no VS Code.
-3. Garanta que o Docker Desktop esteja aberto.
-4. No terminal:
+The project contains a **local billing simulator**. It implements the difficult SaaS part — plans, subscriptions, limits and authorization — but does not charge real money. A real payment provider requires a provider account, API credentials, webhook configuration and production security review.
 
-```bash
-docker compose up --build
-```
+## Local URLs
 
-A primeira execução instala as dependências, espera o PostgreSQL, roda migrations e seeders e inicia a aplicação.
+After starting Docker:
 
-Abra:
+- InventoryFlow: `http://localhost:8080`
+- Mailpit email inbox: `http://localhost:8025`
+- PostgreSQL host port: `5432`
 
-```text
-http://localhost:8080
-```
+## Demo account
 
-### Login de demonstração
+- Email: `demo@inventoryflow.com`
+- Password: `inventory123`
 
-```text
-E-mail: demo@inventoryflow.com
-Senha: inventory123
-```
-
-## Parar
-
-```bash
-docker compose down
-```
-
-Apagar também o banco local:
+## Start
 
 ```bash
-docker compose down -v
+docker compose up -d --build
 ```
 
-## Testes
+Check containers:
+
+```bash
+docker compose ps
+```
+
+Run tests:
 
 ```bash
 docker compose exec app php artisan test
 ```
 
-## API
+View routes:
+
+```bash
+docker compose exec app php artisan route:list
+```
+
+Follow Laravel logs:
+
+```bash
+docker compose exec app tail -f storage/logs/laravel.log
+```
+
+Stop:
+
+```bash
+docker compose down
+```
+
+## Architecture
 
 ```text
-GET    /api/me
-GET    /api/dashboard
-GET    /api/products
-POST   /api/products
-GET    /api/products/{product}
-PUT    /api/products/{product}
-DELETE /api/products/{product}
-GET    /api/inventory/movements
-POST   /api/inventory/movements
-GET    /api/orders
-POST   /api/orders
-GET    /api/orders/{order}
-PUT    /api/orders/{order}
-DELETE /api/orders/{order}
+Browser
+   |
+   v
+Nginx
+   |
+   v
+public/index.php
+   |
+   v
+Laravel
+   |
+   +--> Web routes --> Blade authentication pages
+   |
+   +--> API routes --> Controllers
+                         |
+                         +--> Services / business rules
+                         |
+                         +--> Eloquent Models
+                                  |
+                                  v
+                              PostgreSQL
 ```
+
+## SaaS tenancy
+
+Every business workspace is a tenant:
+
 ```text
-docs/GIT_E_GITHUB_PTBR.md
-deploy/DEPLOY_GCP.md
+User
+  |
+  +---- Workspace A ---- Products / Customers / Orders / Stock
+  |
+  +---- Workspace B ---- Products / Customers / Orders / Stock
 ```
+
+API queries are scoped to the currently selected workspace.
+
+## Suggested learning order
+
+1. `routes/web.php`
+2. `resources/views/login.blade.php`
+3. `AuthController.php`
+4. `routes/api.php`
+5. `EnsureWorkspaceSelected.php`
+6. `Workspace.php` and `User.php`
+7. Migrations
+8. `ProductController.php`
+9. `Product.php`
+10. `app.js`
+11. `InventoryController.php` + `StockService.php`
+12. `OrderController.php` + `OrderItem.php`
+13. Team / invitation / roles
+14. Reports
+15. Docker / Nginx
+16. Tests and GitHub Actions
+
+Read `docs/GUIA_COMPLETO_SAAS_PTBR.md` for the detailed explanation in Portuguese.

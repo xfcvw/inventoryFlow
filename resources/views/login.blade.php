@@ -22,7 +22,7 @@
                     <h1 data-i18n="brandTitle">Smart inventory. Better decisions.</h1>
                     <p data-i18n="brandDescription">Manage your products, inventory and orders through a simple and efficient platform.</p>
                 </div>
-                <div class="brand-footer"><span>Laravel 13 + PostgreSQL</span><span>Portfolio v2.0</span></div>
+                <div class="brand-footer"><span>Laravel 13 + PostgreSQL</span><span>Complete SaaS MVP</span></div>
             </div>
             <div class="login-form-area">
                 <div class="form-container">
@@ -39,8 +39,9 @@
                         @if ($errors->any())<div class="server-error">{{ $errors->first() }}</div>@endif
                         <button type="submit" class="login-button" data-i18n="signIn">Sign in</button>
                     </form>
+                    <p class="auth-switch"><a href="{{ route('password.request') }}">Forgot password?</a></p>
                     <div class="credentials-card"><strong data-i18n="demoCredentials">Demo credentials</strong><code>demo@inventoryflow.com</code><code>inventory123</code></div>
-                    <p class="demo-text"><span data-i18n="portfolio">Portfolio project developed by</span><strong> Vinicius</strong></p>
+                    <p class="auth-switch"><span data-i18n="noAccount">No account yet?</span> <a href="{{ route('register') }}" data-i18n="createAccount">Create account</a></p><p class="demo-text"><span data-i18n="portfolio">Portfolio project developed by</span><strong> Vinicius</strong></p>
                 </div>
             </div>
         </section>

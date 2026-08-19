@@ -1,6 +1,10 @@
 name: Tests
+
 on: [push, pull_request]
-permissions: { contents: read }
+
+permissions:
+  contents: read
+
 jobs:
   laravel-tests:
     runs-on: ubuntu-latest
@@ -9,9 +13,16 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: mbstring, pdo_sqlite, intl, xml, curl
+          extensions: mbstring, pdo_sqlite, intl, xml
           coverage: none
           tools: composer:v2
       - run: composer install --no-interaction --prefer-dist --no-progress
       - run: cp .env.example .env && php artisan key:generate
-      - run: php artisan test
+      - name: Run tests with SQLite
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ':memory:'
+          CACHE_STORE: array
+          SESSION_DRIVER: array
+          MAIL_MAILER: array
+        run: php artisan test

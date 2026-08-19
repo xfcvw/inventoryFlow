@@ -1,4 +1,57 @@
 <?php
+
 namespace Database\Seeders;
-use App\Models\InventoryMovement; use App\Models\Order; use App\Models\Product; use App\Models\User; use Illuminate\Database\Seeder; use Illuminate\Support\Facades\Hash;
-class DatabaseSeeder extends Seeder { public function run():void{$u=User::updateOrCreate(['email'=>'demo@inventoryflow.com'],['name'=>'Vinicius Demo','password'=>Hash::make('inventory123'),'email_verified_at'=>now()]);$items=[['name'=>'Mechanical Keyboard','sku'=>'KB-001','category'=>'Peripherals','price'=>299.90,'stock'=>12,'min_stock'=>5],['name'=>'Wireless Mouse','sku'=>'MS-002','category'=>'Peripherals','price'=>149.90,'stock'=>4,'min_stock'=>5],['name'=>'USB-C Hub','sku'=>'HB-003','category'=>'Accessories','price'=>189.90,'stock'=>7,'min_stock'=>3],['name'=>'Gaming Headset','sku'=>'HS-004','category'=>'Audio','price'=>249.90,'stock'=>2,'min_stock'=>4]];foreach($items as $d){Product::updateOrCreate(['user_id'=>$u->id,'sku'=>$d['sku']],[...$d,'user_id'=>$u->id]);}$kb=Product::where('user_id',$u->id)->where('sku','KB-001')->firstOrFail();$ms=Product::where('user_id',$u->id)->where('sku','MS-002')->firstOrFail();$hs=Product::where('user_id',$u->id)->where('sku','HS-004')->firstOrFail();if(!InventoryMovement::where('user_id',$u->id)->exists())$u->inventoryMovements()->createMany([['product_id'=>$kb->id,'type'=>'in','quantity'=>10],['product_id'=>$ms->id,'type'=>'out','quantity'=>2],['product_id'=>$hs->id,'type'=>'out','quantity'=>1]]);if(!Order::where('user_id',$u->id)->exists())$u->orders()->createMany([['customer'=>'Lucas Martins','total'=>449.80,'status'=>'pending'],['customer'=>'Ana Costa','total'=>299.90,'status'=>'processing'],['customer'=>'Rafael Lima','total'=>189.90,'status'=>'completed']]);} }
+
+use App\Models\Category;
+use App\Models\Customer;
+use App\Models\Product;
+use App\Models\ProductWarehouseStock;
+use App\Models\Subscription;
+use App\Models\Supplier;
+use App\Models\User;
+use App\Models\Warehouse;
+use App\Models\Workspace;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+
+class DatabaseSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $user = User::firstOrCreate(
+            ['email' => 'demo@inventoryflow.com'],
+            ['name' => 'Demo User', 'password' => Hash::make('inventory123')]
+        );
+
+        $workspace = Workspace::firstOrCreate(
+            ['slug' => 'demo-store'],
+            ['name' => 'Demo Store', 'owner_id' => $user->id, 'plan' => 'pro', 'currency' => 'BRL', 'locale' => 'pt-BR', 'timezone' => 'America/Sao_Paulo', 'business_type' => 'E-commerce', 'onboarding_completed' => true]
+        );
+        $workspace->users()->syncWithoutDetaching([$user->id => ['role' => 'owner']]);
+        if (! $user->current_workspace_id) $user->update(['current_workspace_id' => $workspace->id]);
+
+        Subscription::firstOrCreate(['workspace_id' => $workspace->id, 'status' => 'active'], ['plan' => 'pro', 'provider' => 'local', 'current_period_ends_at' => now()->addMonth()]);
+        $warehouse = Warehouse::firstOrCreate(['workspace_id' => $workspace->id, 'code' => 'MAIN'], ['name' => 'Main Warehouse', 'is_default' => true]);
+        $peripherals = Category::firstOrCreate(['workspace_id' => $workspace->id, 'slug' => 'peripherals'], ['name' => 'Peripherals']);
+        $accessories = Category::firstOrCreate(['workspace_id' => $workspace->id, 'slug' => 'accessories'], ['name' => 'Accessories']);
+        $supplier = Supplier::firstOrCreate(['workspace_id' => $workspace->id, 'name' => 'Tech Supplier'], ['email' => 'supplier@example.com', 'contact_name' => 'Alex']);
+        Customer::firstOrCreate(['workspace_id' => $workspace->id, 'email' => 'customer@example.com'], ['name' => 'Sample Customer', 'phone' => '+55 11 99999-0000']);
+
+        $items = [
+            ['name' => 'Mechanical Keyboard', 'sku' => 'KB-001', 'category_id' => $peripherals->id, 'price' => 299.90, 'cost_price' => 180, 'qty' => 12, 'min' => 5],
+            ['name' => 'Wireless Mouse', 'sku' => 'MS-002', 'category_id' => $peripherals->id, 'price' => 149.90, 'cost_price' => 80, 'qty' => 4, 'min' => 5],
+            ['name' => 'USB-C Hub', 'sku' => 'HB-003', 'category_id' => $accessories->id, 'price' => 189.90, 'cost_price' => 110, 'qty' => 7, 'min' => 3],
+        ];
+
+        foreach ($items as $data) {
+            $product = Product::firstOrCreate(
+                ['workspace_id' => $workspace->id, 'sku' => $data['sku']],
+                ['user_id' => $user->id, 'category_id' => $data['category_id'], 'supplier_id' => $supplier->id, 'name' => $data['name'], 'category' => Category::find($data['category_id'])->name, 'price' => $data['price'], 'cost_price' => $data['cost_price'], 'stock' => $data['qty'], 'min_stock' => $data['min'], 'active' => true]
+            );
+            ProductWarehouseStock::firstOrCreate(
+                ['product_id' => $product->id, 'warehouse_id' => $warehouse->id],
+                ['workspace_id' => $workspace->id, 'quantity' => $data['qty'], 'min_stock' => $data['min']]
+            );
+        }
+    }
+}
